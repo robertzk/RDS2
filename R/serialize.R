@@ -60,7 +60,15 @@
 #'
 #' # With RDS, the object is deserialized correctly.
 saveRDS <- function(object, ...) {
-  base::saveRDS(object, ...)  
+  serialized_object <- serialize(object)
+  return_value <- base::saveRDS(serialized_object, ...)
+
+  ## Some objects, such as reference class objects, will experience side-effects
+  ## (mutation) during serialization. At the expense of computational slowness,
+  ## we undo the serialization to revert these side effects.
+  deserialize(serialized_object)
+
+  return_value
 }
 
 #' Serialize or deserialize an R object according to its RDS2 serialization.
@@ -79,7 +87,7 @@ serialize <- function(object) {
     warning("Size-0 object is being serialized.", call. = TRUE)
     NULL
   } else {
-    read_method(object)(object)
+    write_method(object)(object)
   }
 }
 
@@ -89,15 +97,15 @@ deserialize <- function(object) {
     warning("Size-0 object is being serialized.", call. = TRUE)
     NULL
   } else {
-    write_method(object)(object)
+    read_method(object)(object)
   }
 }
 
 write_method <- function(object) {
-  (attr("RDS2.serialize")$write %||% identity)(object)
+  attr(object, "RDS2.serialize")$write %||% identity
 }
 
 read_method <- function(object) {
-  (attr("RDS2.serialize")$read %||% identity)(object)
+  attr(object, "RDS2.serialize")$read %||% identity
 }
 

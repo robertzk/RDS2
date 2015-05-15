@@ -14,10 +14,11 @@ describe("Writing a non-vanilla object", {
     file <- tempfile()
     nonnative_obj <- list(x = "pointer")
     attr(nonnative_obj, "RDS2.serialize") <- list(
-      read  = function(obj) { obj$y <- rawToChar(obj$y); obj },
-      write = function(obj) { obj$y <- charToRaw(obj$y); obj }
+      read  = function(obj) { obj$x <- rawToChar(obj$x); obj },
+      write = function(obj) { obj$x <- charToRaw(obj$x); obj }
     )
     saveRDS(nonnative_obj, file)
-    expect_identical(list(x = charToRaw("pointer")), base::readRDS(file))
+    expect_identical(list(x = charToRaw("pointer")),
+                     without_attributes(base::readRDS(file)))
   })
 })
