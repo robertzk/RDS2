@@ -106,7 +106,7 @@ serialize <- function(object) {
   }
 }
 
-#' @rdname serialize.
+#' @rdname serialize
 deserialize <- function(object) { 
   if (object.size(object) == 0) {
     warning("Size-0 object is being serialized.", call. = TRUE)

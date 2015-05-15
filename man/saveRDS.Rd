@@ -7,13 +7,14 @@
 \usage{
 saveRDS(object, ...)
 
-readRDS(object, ...)
+readRDS(file, ...)
 }
 \arguments{
 \item{object}{ANY. The R object to serialize to a file.}
 
-\item{...}{arguments to pass to \code{\link[base]{saveRDS}}. If the first
-argument, that is, the \code{object} parameter, has an attribute called
+\item{...}{arguments to pass to \code{\link[base]{saveRDS}} or
+ \code{\link[base]{saveRDS}}. If the first  argument of \code{saveRDS},
+ that is, the \code{object} parameter, has an attribute called
 "RDS2.serialize", special serialization and deserialization will occur
 prior to writing to the file.}
 }
