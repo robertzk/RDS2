@@ -27,11 +27,12 @@
 #'
 #' @name saveRDS
 #' @note The attribute "RDS2.serialize" will be serialized along with the
-#'   object, so you must be careful that the parent environment chain of the
-#'   helper function does not contain large objects. In general, it is better
-#'   to use no helper functions (i.e., the \code{read} and \code{write}
-#'   functions should be pure functions rather than closures, and you should
-#'   set their \code{environment(read) <- globalenv()} explicitly.).
+#'   object, so you must be careful that the parent environment chain of
+#'   helper functions used in the read and write methods do not contain
+#'   large objects. In general, it is better to use no helper functions
+#'   (i.e., the \code{read} and \code{write} functions should be pure
+#'   functions rather than closures, and you should set their
+#'   \code{environment(read) <- globalenv()} explicitly.).
 #'
 #'   The mechanism provided by RDS2 is slightly different than the
 #'   \code{refhook} argument to the base \code{\link[base]{readRDS}} and
