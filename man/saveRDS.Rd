@@ -11,7 +11,7 @@ readRDS(file, ...)
 }
 \arguments{
 \item{object}{ANY. The R object to serialize to a file. This object should
-  have an attribute with the same "RDS2.serialize" if the RDS2 package
+  have an attribute with the name "RDS2.serialize" if the RDS2 package
   capabilities for serializing and deserializing non-native R objects
   wish to be used. It should consist of a list with one or both of the
   keys \code{read} and \code{write} that take the object as input
@@ -30,7 +30,7 @@ readRDS(file, ...)
   does not affect the object or any of its components.}
 
 \item{...}{arguments to pass to \code{\link[base]{saveRDS}} or
- \code{\link[base]{saveRDS}}. If the first  argument of \code{saveRDS},
+ \code{\link[base]{saveRDS}}. If the first argument of \code{saveRDS},
  that is, the \code{object} parameter, has an attribute called
 "RDS2.serialize", special serialization and deserialization will occur
 prior to writing to the file.}
@@ -97,8 +97,10 @@ attr(nonnative_obj, "RDS2.serialize") <- list(
   write = function(obj) { obj$y <- charToRaw(obj$y); obj }
 )
 saveRDS(nonnative_obj, file)
-stopifnot(identical(list(x = 1, y = charToRaw("pointer")), base::readRDS(file)))
-stopifnot(identical(nonnative_obj, readRDS(file)))
+without_attributes <- function(obj) { attr(obj, "RDS2.serialize") <- NULL; obj }
+stopifnot(identical(list(x = 1, y = charToRaw("pointer")),
+  without_attributes(base::readRDS(file))))
+stopifnot(all.equal(nonnative_obj, readRDS(file)))
 # Without RDS2, the vanilla object that was passed through the "write" method
 # is stored in the file. We cannot load the object correctly unless RDS2
 # is in the search path, so consumers of this RDS file should be careful.
