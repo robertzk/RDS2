@@ -1,11 +1,11 @@
-context("saveRDS")
+context("readRDS")
 
-describe("Writing a vanilla object", {
-  test_that("it has exactly the same behavior as the base saveRDS function", {
+describe("Reading a vanilla object", {
+  test_that("it has exactly the same behavior as the base readRDS function", {
     file <- tempfile()
     native_obj <- list(x = 1)
     saveRDS(native_obj, file)
-    expect_identical(native_obj, base::readRDS(file))
+    expect_identical(native_obj, readRDS(file))
   })
 })
 

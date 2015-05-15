@@ -1,7 +1,7 @@
 #' Serialize an R object to a connection.
 #'
-#' This version of saveRDS provides capabilities to define serializers
-#' for non-native R objects (such as external pointers to C structures).
+#' This version of readRDS and saveRDS provides capabilities to define
+#' serializers for non-native R objects (such as external pointers to C structures).
 #'  
 #' The function behaves exactly the same as \code{\link[base]{saveRDS}}
 #' for native R objects. However, if the object has an attribute 
@@ -31,6 +31,14 @@
 #'   to use no helper functions (i.e., the \code{read} and \code{write}
 #'   functions should be pure functions rather than closures, and you should
 #'   set their \code{environment(read) <- globalenv()} explicitly.).
+#'
+#'   The mechanism provided by RDS2 is slightly different than the
+#'   \code{refhook} argument to the base \code{\link[base]{readRDS}} and
+#'   \code{\link[base]{saveRDS}}, since it encloses the serialization procedure
+#'   within the serialized object. This allows for greater portability, since
+#'   (if these functions are pure) the consumer of an RDS2-serialized object
+#'   need only have the RDS2 package attached, rather than the function or
+#'   library the \code{refhook} may be from.
 #' @param object ANY. The R object to serialize to a file.
 #' @param ... arguments to pass to \code{\link[base]{saveRDS}}. If the first
 #'   argument, that is, the \code{object} parameter, has an attribute called
@@ -69,6 +77,10 @@ saveRDS <- function(object, ...) {
   deserialize(serialized_object)
 
   return_value
+}
+
+#' @rdname saveRDS
+readRDS <- function(object, ...) {
 }
 
 #' Serialize or deserialize an R object according to its RDS2 serialization.
