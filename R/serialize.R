@@ -25,6 +25,7 @@
 #' that serialize and deserialize the C structure to an R object,
 #' such as a \code{\link{raw}} vector.
 #'
+#' @name saveRDS
 #' @note The attribute "RDS2.serialize" will be serialized along with the
 #'   object, so you must be careful that the parent environment chain of the
 #'   helper function does not contain large objects. In general, it is better
@@ -64,6 +65,7 @@
 #'   prior to writing to the file.
 #' @return For \code{readRDS}, an R object. For \code{saveRDS}, \code{NULL},
 #'   invisibly.
+#' @export
 #' @examples
 #' file <- tempfile()
 #' native_obj <- list(x = 1)
@@ -100,6 +102,7 @@ saveRDS <- function(object, ...) {
 }
 
 #' @rdname saveRDS
+#' @export
 readRDS <- function(file, ...) {
   raw_object <- base::readRDS(file, ...)
   deserialize(raw_object)
@@ -107,6 +110,7 @@ readRDS <- function(file, ...) {
 
 #' Serialize or deserialize an R object according to its RDS2 serialization.
 #'
+#' @name serialize
 #' @seealso \code{\link{saveRDS}}
 #' @param object ANY. The R object to serialize.
 #' @return For serialize, the serialized R object. For deserialize, the
