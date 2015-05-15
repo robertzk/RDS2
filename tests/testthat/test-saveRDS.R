@@ -50,3 +50,6 @@ describe("Writing a non-vanilla object", {
   })
 })
 
+describe("Writing reference class objects", {
+})
+
