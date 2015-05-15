@@ -60,5 +60,5 @@
 #'
 #' # With RDS, the object is deserialized correctly.
 saveRDS <- function(object, ...) {
-  
+  base::saveRDS(object, ...)  
 }
