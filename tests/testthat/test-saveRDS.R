@@ -51,5 +51,17 @@ describe("Writing a non-vanilla object", {
 })
 
 describe("Writing reference class objects", {
+  test_that("using saveRDS does not have side effects on the reference class object", {
+    file <- tempfile()
+    nonnative_obj <- ref_class_object()
+    nonnative_obj$set_env("foo", "bar")
+    attr(nonnative_obj, "RDS2.serialize") <- list(
+      read  = function(obj) { obj$set_env("foo", "bar"); obj },
+      write = function(obj) { obj$set_env("foo", "baz"); obj }
+    )
+    saveRDS(nonnative_obj, file)
+    expect_identical(nonnative_obj$get_env("foo"), "bar")
+    expect_equal(base::readRDS(file)$env$foo, "baz")
+  })
 })
 
