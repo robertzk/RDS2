@@ -40,8 +40,9 @@
 #'   need only have the RDS2 package attached, rather than the function or
 #'   library the \code{refhook} may be from.
 #' @param object ANY. The R object to serialize to a file.
-#' @param ... arguments to pass to \code{\link[base]{saveRDS}}. If the first
-#'   argument, that is, the \code{object} parameter, has an attribute called
+#' @param ... arguments to pass to \code{\link[base]{saveRDS}} or
+#'    \code{\link[base]{saveRDS}}. If the first  argument of \code{saveRDS},
+#'    that is, the \code{object} parameter, has an attribute called
 #'   "RDS2.serialize", special serialization and deserialization will occur
 #'   prior to writing to the file.
 #' @return For \code{readRDS}, an R object. For \code{saveRDS}, \code{NULL},
@@ -80,7 +81,9 @@ saveRDS <- function(object, ...) {
 }
 
 #' @rdname saveRDS
-readRDS <- function(object, ...) {
+readRDS <- function(file, ...) {
+  raw_object <- base::readRDS(file, ...)
+  deserialize(raw_object)
 }
 
 #' Serialize or deserialize an R object according to its RDS2 serialization.
