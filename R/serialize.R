@@ -105,6 +105,8 @@ saveRDS <- function(object, ...) {
 }
 
 #' @rdname saveRDS
+#' @param file a connection or the name of the file where the R object is saved
+#'    to or read from.
 #' @export
 readRDS <- function(file, ...) {
   raw_object <- base::readRDS(file, ...)

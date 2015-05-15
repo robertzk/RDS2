@@ -34,6 +34,9 @@ readRDS(file, ...)
  that is, the \code{object} parameter, has an attribute called
 "RDS2.serialize", special serialization and deserialization will occur
 prior to writing to the file.}
+
+\item{file}{a connection or the name of the file where the R object is saved
+to or read from.}
 }
 \value{
 For \code{readRDS}, an R object. For \code{saveRDS}, \code{NULL},
