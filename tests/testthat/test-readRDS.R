@@ -10,7 +10,7 @@ describe("Reading a vanilla object", {
 })
 
 describe("Writing a non-vanilla object", {
-  test_that("the base readRDS reads an object with the read method applied", {
+  test_that("the readRDS reads an object with the read method applied", {
     file <- tempfile()
     nonnative_obj <- list(x = "pointer")
     attr(nonnative_obj, "RDS2.serialize") <- list(
@@ -22,4 +22,17 @@ describe("Writing a non-vanilla object", {
   })
 })
 
+describe("Reading reference class objects", {
+  test_that("the readRDS reads a reference class object with the read method applied", {
+    file <- tempfile()
+    nonnative_obj <- ref_class_object()
+    nonnative_obj$set_env("foo", "bar")
+    attr(nonnative_obj, "RDS2.serialize") <- list(
+      read  = function(obj) { obj$set_env("foo", "bar"); obj },
+      write = function(obj) { obj$set_env("foo", "baz"); obj }
+    )
+    saveRDS(nonnative_obj, file)
+    expect_equal(readRDS(file)$env$foo, "bar")
+  })
+})
 
