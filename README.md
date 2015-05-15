@@ -1,4 +1,4 @@
-Better serialization for R [![Build Status](https://travis-ci.org/robertzk/RDS2.svg?branch=master)](https://travis-ci.org/robertzk/RDS2) [![Coverage Status](https://coveralls.io/repos/robertzk/RDS2/badge.svg?branch=master)](https://coveralls.io/r/robertzk/RDS2?branch=master)
+Better serialization for R [![Build Status](https://travis-ci.org/robertzk/RDS2.svg?branch=master)](https://travis-ci.org/robertzk/RDS2) [![Coverage Status](https://coveralls.io/repos/robertzk/RDS2/badge.svg?branch=master)](https://coveralls.io/r/robertzk/RDS2?branch=master) [![Documentation](https://img.shields.io/badge/rocco--docs-%E2%9C%93-blue.svg)](http://robertzk.github.io/RDS2/)
 ===========
 
 A slightly improved serialization format over R's built-in [RDS](http://cran.r-project.org/web/packages/RDS/index.html)
