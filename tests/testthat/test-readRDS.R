@@ -20,6 +20,16 @@ describe("Writing a non-vanilla object", {
     saveRDS(nonnative_obj, file)
     expect_equal(nonnative_obj, readRDS(file))
   })
+
+  test_that("a write method is not necessary", {
+    file <- tempfile()
+    nonnative_obj <- list(x = charToRaw("pointer"))
+    attr(nonnative_obj, "RDS2.serialize") <- list(
+      read = function(obj) { obj$x <- rawToChar(obj$x); obj }
+    )
+    base::saveRDS(nonnative_obj, file)
+    expect_equal(list(x = "pointer"), without_attributes(readRDS(file)))
+  })
 })
 
 describe("Reading reference class objects", {
