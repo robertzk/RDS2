@@ -21,6 +21,18 @@ describe("Writing a non-vanilla object", {
     expect_identical(list(x = charToRaw("pointer")),
                      without_attributes(base::readRDS(file)))
   })
-})
 
+  test_that("it undoes side effects to reference class objects", {
+    file <- tempfile()
+    nonnative_obj <- list2env(list(x = "pointer"), parent = globalenv())
+    attr(nonnative_obj, "RDS2.serialize") <- list(
+      read  = function(obj) { obj$x <- rawToChar(obj$x); obj },
+      write = function(obj) { obj$x <- charToRaw(obj$x); obj }
+    )
+    saveRDS(nonnative_obj, file)
+    expect_identical(as.list(nonnative_obj), list(x = "pointer"))
+    expect_identical(list(x = charToRaw("pointer")),
+                     as.list(base::readRDS(file)))
+  })
+})
 
