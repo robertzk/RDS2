@@ -62,3 +62,42 @@
 saveRDS <- function(object, ...) {
   base::saveRDS(object, ...)  
 }
+
+#' Serialize or deserialize an R object according to its RDS2 serialization.
+#'
+#' @seealso \code{\link{saveRDS}}
+#' @param object ANY. The R object to serialize.
+#' @return For serialize, the serialized R object. For deserialize, the
+#'   deserialized R object.
+#'
+#'   The function \code{attr(object, "RDS2.serialize")$write} will be
+#'   used to perform the serialization and the 
+#'   \code{attr(object, "RDS2.serialize")$read} function will be used
+#'   to perform the deserialization.
+serialize <- function(object) {
+  if (object.size(object) == 0) {
+    warning("Size-0 object is being serialized.", call. = TRUE)
+    NULL
+  } else {
+    read_method(object)(object)
+  }
+}
+
+#' @rdname serialize.
+deserialize <- function(object) { 
+  if (object.size(object) == 0) {
+    warning("Size-0 object is being serialized.", call. = TRUE)
+    NULL
+  } else {
+    write_method(object)(object)
+  }
+}
+
+write_method <- function(object) {
+  (attr("RDS2.serialize")$write %||% identity)(object)
+}
+
+read_method <- function(object) {
+  (attr("RDS2.serialize")$read %||% identity)(object)
+}
+

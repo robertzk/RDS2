@@ -57,7 +57,7 @@ The attribute "RDS2.serialize" will be serialized along with the
 file <- tempfile()
 native_obj <- list(x = 1)
 saveRDS(native_obj, file)
-expect_identical(native_obj, readRDS(file))
+stopifnot(identical(native_obj, readRDS(file)))
 
 # We do not have any C structures to play with, but we will pretend
 # by converting the string "pointer" to a raw vector.
@@ -67,8 +67,8 @@ attr(nonnative_obj, "RDS2.serialize") <- list(
   write = function(obj) { obj$y <- charToRaw(obj$y); obj }
 )
 saveRDS(nonnative_obj, file)
-expect_identical(list(x = 1, y = charToRaw("pointer")), base::readRDS(file))
-expect_identical(nonnative_obj, readRDS(file))
+stopifnot(identical(list(x = 1, y = charToRaw("pointer")), base::readRDS(file)))
+stopifnot(identical(nonnative_obj, readRDS(file)))
 # Without RDS2, the vanilla object that was passed through the "write" method
 # is stored in the file. We cannot load the object correctly unless RDS2
 # is in the search path, so consumers of this RDS file should be careful.
