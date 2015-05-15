@@ -13,8 +13,6 @@ Depends:
     R (>= 3.0.1)
 License: MIT
 LazyData: true
-Imports:
-    stringr
 Suggests:
     knitr,
     microbenchmark,
