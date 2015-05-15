@@ -65,3 +65,15 @@ describe("Writing reference class objects", {
   })
 })
 
+describe("Writing size-zero objects", {
+  test_that("using saveRDS on a non-size-zero object does not give a warning", {
+    file <- tempfile()
+    native_obj <- list(x = 1)
+    tryCatch(saveRDS(native_obj, file), warning = function(w) stop("Warning issued"))
+  })
+
+  test_that("using saveRDS on a size-zero object gives a warning", {
+    expect_warning(saveRDS(NULL, tempfile()), "Size-0")
+  })
+})
+
