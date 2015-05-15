@@ -10,7 +10,24 @@ saveRDS(object, ...)
 readRDS(file, ...)
 }
 \arguments{
-\item{object}{ANY. The R object to serialize to a file.}
+\item{object}{ANY. The R object to serialize to a file. This object should
+  have an attribute with the same "RDS2.serialize" if the RDS2 package
+  capabilities for serializing and deserializing non-native R objects
+  wish to be used. It should consist of a list with one or both of the
+  keys \code{read} and \code{write} that take the object as input
+  and convert a vanilla-to-non-vanilla and non-vanilla-to-vanilla R
+  object, respectively. (Here, non-vanilla means it may reference non-native
+  R objects, such as external pointers to C structures).
+
+  If the "RDS2.serialize" attribute has the list element
+  \code{side_effects = FALSE}, an additional deserialization step will
+  not be executed during \code{saveRDS}. This can be used to slightly speed
+  up that function. For example, if \code{saveRDS} is serializing a reference
+  class object or environment, where the \code{write} function can have
+  side effects on the object, we must be careful to undo these effects.
+  Setting \code{attr(object, "RDS2.serialize")$side_effects = FALSE},
+  we skip this reversal, if we are confident the serialization procedure
+  does not affect the object or any of its components.}
 
 \item{...}{arguments to pass to \code{\link[base]{saveRDS}} or
  \code{\link[base]{saveRDS}}. If the first  argument of \code{saveRDS},

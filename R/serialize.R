@@ -39,7 +39,24 @@
 #'   (if these functions are pure) the consumer of an RDS2-serialized object
 #'   need only have the RDS2 package attached, rather than the function or
 #'   library the \code{refhook} may be from.
-#' @param object ANY. The R object to serialize to a file.
+#' @param object ANY. The R object to serialize to a file. This object should
+#'   have an attribute with the same "RDS2.serialize" if the RDS2 package
+#'   capabilities for serializing and deserializing non-native R objects
+#'   wish to be used. It should consist of a list with one or both of the
+#'   keys \code{read} and \code{write} that take the object as input
+#'   and convert a vanilla-to-non-vanilla and non-vanilla-to-vanilla R
+#'   object, respectively. (Here, non-vanilla means it may reference non-native
+#'   R objects, such as external pointers to C structures).
+#'
+#'   If the "RDS2.serialize" attribute has the list element
+#'   \code{side_effects = FALSE}, an additional deserialization step will
+#'   not be executed during \code{saveRDS}. This can be used to slightly speed
+#'   up that function. For example, if \code{saveRDS} is serializing a reference
+#'   class object or environment, where the \code{write} function can have 
+#'   side effects on the object, we must be careful to undo these effects.
+#'   Setting \code{attr(object, "RDS2.serialize")$side_effects = FALSE},
+#'   we skip this reversal, if we are confident the serialization procedure
+#'   does not affect the object or any of its components.
 #' @param ... arguments to pass to \code{\link[base]{saveRDS}} or
 #'    \code{\link[base]{saveRDS}}. If the first  argument of \code{saveRDS},
 #'    that is, the \code{object} parameter, has an attribute called
@@ -75,7 +92,9 @@ saveRDS <- function(object, ...) {
   ## Some objects, such as reference class objects, will experience side-effects
   ## (mutation) during serialization. At the expense of computational slowness,
   ## we undo the serialization to revert these side effects.
-  deserialize(serialized_object)
+  if (has_side_effects(object)) {
+    deserialize(serialized_object)
+  }
 
   return_value
 }
@@ -122,5 +141,12 @@ write_method <- function(object) {
 
 read_method <- function(object) {
   attr(object, "RDS2.serialize")$read %||% identity
+}
+
+has_side_effects <- function(object) {
+  ## If the user specifies that this object's serialization does
+  ## not have side effects on the R object, we can skip the deserialization
+  ## step in `saveRDS`.
+  !identical(attr(object, "RDS2.serialize")$side_effects, FALSE)
 }
 
