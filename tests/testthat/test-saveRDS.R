@@ -23,6 +23,17 @@ describe("Writing a non-vanilla object", {
                      without_attributes(base::readRDS(file)))
   })
 
+  test_that("a read method is not necessary", {
+    file <- tempfile()
+    nonnative_obj <- list(x = "pointer")
+    attr(nonnative_obj, "RDS2.serialize") <- list(
+      write = function(obj) { obj$x <- charToRaw(obj$x); obj }
+    )
+    saveRDS(nonnative_obj, file)
+    expect_identical(list(x = charToRaw("pointer")),
+                     without_attributes(base::readRDS(file)))
+  })
+
   test_that("it undoes side effects to reference class objects", {
     file <- tempfile()
     nonnative_obj <- list2env(list(x = "pointer"), parent = globalenv())

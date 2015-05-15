@@ -36,3 +36,17 @@ describe("Reading reference class objects", {
   })
 })
 
+describe("Reading size-zero objects", {
+  test_that("using readRDS on a non-size-zero object does not give a warning", {
+    file <- tempfile()
+    native_obj <- list(x = 1)
+    saveRDS(native_obj, file)
+    tryCatch(readRDS(file), warning = function(w) stop("Warning issued"))
+  })
+
+  test_that("using readRDS on a size-zero object gives a warning", {
+    file <- tempfile()
+    suppressWarnings(saveRDS(NULL, file))
+    expect_warning(readRDS(file), "Size-0")
+  })
+})
