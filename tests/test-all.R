@@ -1,3 +1,4 @@
 library("testthat")
-library("package.name")
-test_check("package.name")
+library("testthatsomemore")
+library("RDS2")
+test_check("RDS2")

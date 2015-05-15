@@ -19,6 +19,5 @@
 #' and reverse this process during reading.
 #'
 #' @name RDS2
-#' @import stringr
 #' @docType package
 NULL
