@@ -62,6 +62,7 @@ describe("Writing reference class objects", {
     saveRDS(nonnative_obj, file)
     expect_identical(nonnative_obj$get_env("foo"), "bar")
     expect_equal(base::readRDS(file)$env$foo, "baz")
+    expect_equal(readRDS(file)$env$foo, "bar")
   })
 })
 
