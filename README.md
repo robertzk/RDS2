@@ -7,7 +7,7 @@ non-native C structures).
 
 # Installation
 
-This package is not yet available from CRAN (as of May 15, 2015).
+This package is not yet available from CRAN (as of October 4, 2015).
 To install the latest development builds directly from GitHub, run this instead:
 
 ```R
