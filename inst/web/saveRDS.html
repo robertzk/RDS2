@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>saveRDS. RDS2 0.1.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">RDS2 0.1.0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Serialize an R object to a connection.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>saveRDS(object, ...)</div>
+<div>readRDS(file, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>object</dt>
+      <dd>ANY. The R object to serialize to a file. This object should
+  have an attribute with the name "RDS2.serialize" if the RDS2 package
+  capabilities for serializing and deserializing non-native R objects
+  wish to be used. It should consist of a list with one or both of the
+  keys <code>read</code> and <code>write</code> that take the object as input
+  and convert a vanilla-to-non-vanilla and non-vanilla-to-vanilla R
+  object, respectively. (Here, non-vanilla means it may reference non-native
+  R objects, such as external pointers to C structures).
+
+  If the "RDS2.serialize" attribute has the list element
+  <code>side_effects = FALSE</code>, an additional deserialization step will
+  not be executed during <code>saveRDS</code>. This can be used to slightly speed
+  up that function. For example, if <code>saveRDS</code> is serializing a reference
+  class object or environment, where the <code>write</code> function can have 
+  side effects on the object, we must be careful to undo these effects.
+  Setting <code>attr(object, "RDS2.serialize")$side_effects = FALSE</code>,
+  we skip this reversal, if we are confident the serialization procedure
+  does not affect the object or any of its components.</dd>
+      <dt>...</dt>
+      <dd>arguments to pass to <code><a href='http://www.inside-r.org/r-doc/base/readRDS'>saveRDS</a></code> or
+ <code><a href='http://www.inside-r.org/r-doc/base/readRDS'>saveRDS</a></code>. If the first argument of <code>saveRDS</code>,
+ that is, the <code>object</code> parameter, has an attribute called
+"RDS2.serialize", special serialization and deserialization will occur
+prior to writing to the file.</dd>
+      <dt>file</dt>
+      <dd>a connection or the name of the file where the R object is saved
+to or read from.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+For <code>readRDS</code>, an R object. For <code>saveRDS</code>, <code>NULL</code>,
+  invisibly.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>This version of readRDS and saveRDS provides capabilities to define
+serializers for non-native R objects (such as external pointers to C structures).</p>
+  
+      <p>The function behaves exactly the same as <code><a href='http://www.inside-r.org/r-doc/base/readRDS'>saveRDS</a></code>
+for native R objects. However, if the object has an attribute 
+called "RDS2.serialize", this will be used to serialize the object
+instead. Specifically, the attribute must be a list with keys
+<code>"read"</code> and <code>"write"</code> which must be functions that
+transform the object into a vanilla R object.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>For example, suppose we have an object <code>a <- list(x = 1, y = z)</code>,
+where <code>z</code> is an external pointer to a C structure.
+We could set the "RDS2.serialize" attribute as follows.</p>
+  
+      <p><code>
+  attr(a, "RDS2.serialize") <- list(
+    read  = function(obj) { obj$y <- raw_to_ptr(obj$y); obj },
+    write = function(obj) { obj$y <- ptr_to_raw(obj$y); obj }
+ )
+</code></p>
+  
+      <p>Here, <code>raw_to_ptr</code> and <code>ptr_to_raw</code> are helper functions
+that serialize and deserialize the C structure to an R object,
+such as a <code><a href='http://www.inside-r.org/r-doc/base/raw'>raw</a></code> vector.</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p>The attribute "RDS2.serialize" will be serialized along with the
+  object, so you must be careful that the parent environment chain of
+  helper functions used in the read and write methods do not contain
+  large objects. In general, it is better to use no helper functions
+  (i.e., the <code>read</code> and <code>write</code> functions should be pure
+  functions rather than closures, and you should set their
+  <code>environment(read) <- globalenv()</code> explicitly.).</p>
+  
+      <p>The mechanism provided by RDS2 is slightly different than the
+  <code>refhook</code> argument to the base <code><a href='http://www.inside-r.org/r-doc/base/readRDS'>readRDS</a></code> and
+  <code><a href='http://www.inside-r.org/r-doc/base/readRDS'>saveRDS</a></code>, since it encloses the serialization procedure
+  within the serialized object. This allows for greater portability, since
+  (if these functions are pure) the consumer of an RDS2-serialized object
+  need only have the RDS2 package attached, rather than the function or
+  library the <code>refhook</code> may be from.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>file &lt;- tempfile()
+native_obj &lt;- list(x = 1)
+saveRDS(native_obj, file)
+</div>
+<div class='output'>NULL
+</div>
+<div class='input'>stopifnot(identical(native_obj, readRDS(file)))
+
+# We do not have any C structures to play with, but we will pretend
+# by converting the string &quot;pointer&quot; to a raw vector.
+nonnative_obj &lt;- list(x = 1, y = &quot;pointer&quot;)
+attr(nonnative_obj, &quot;RDS2.serialize&quot;) &lt;- list(
+  read  = function(obj) { obj$y &lt;- rawToChar(obj$y); obj },
+  write = function(obj) { obj$y &lt;- charToRaw(obj$y); obj }
+)
+saveRDS(nonnative_obj, file)
+</div>
+<div class='output'>NULL
+</div>
+<div class='input'>without_attributes &lt;- function(obj) { attr(obj, &quot;RDS2.serialize&quot;) &lt;- NULL; obj }
+stopifnot(identical(list(x = 1, y = charToRaw(&quot;pointer&quot;)),
+  without_attributes(base::readRDS(file))))
+stopifnot(all.equal(nonnative_obj, readRDS(file)))
+# Without RDS2, the vanilla object that was passed through the &quot;write&quot; method
+# is stored in the file. We cannot load the object correctly unless RDS2
+# is in the search path, so consumers of this RDS file should be careful.
+
+# With RDS, the object is deserialized correctly.
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>readRDS</li><li>saveRDS</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
